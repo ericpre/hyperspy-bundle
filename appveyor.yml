@@ -4,8 +4,10 @@ shallow_clone: true
 environment:
 
   global:
-    NSIS_DIR: "%USERPROFILE%\\NSISBI"
+    NSIS_DIR: "%USERPROFILE%\\nsis-binary-7069-2"
     MPLBACKEND: "agg"
+    WP_INSTDIR: "%USERPROFILE%\\wpdir\\WinPython-%PYTHON_ARCH%\\"
+    WP_EXE: "%USERPROFILE%\\wpdir\\WinPython3-%PYTHON_ARCH%bit.exe"
 
   matrix:
 
@@ -37,29 +39,26 @@ build: false  # Not a C# project, build stuff at the test step instead.
 before_deploy:
   # Download WinPython installer if not cached
   - ps: Add-AppveyorMessage "Installing WinPython..."
-  - "SET WP_INSTDIR=%USERPROFILE%\\wpdir\\WinPython-%PYTHON_ARCH%\\"
-  - "SET WP_EXE=%USERPROFILE%/wpdir/WinPython3-%PYTHON_ARCH%bit.exe"
   - "mkdir %USERPROFILE%\\wpdir"
   - ps: appveyor DownloadFile $Env:WP_URL -FileName $Env:WP_EXE
   - ps: Write-Output (Get-FileHash $Env:WP_EXE)
   - ps: if ((Get-FileHash $Env:WP_EXE).Hash -ne $Env:WP_CRC) { exit(1) }
   - ps: (& $Env:WP_EXE /VERYSILENT /DIR=$Env:WP_INSTDIR | Out-Null )
-  - "ls %USERPROFILE%/wpdir"
+  - "ls %USERPROFILE%\\wpdir"
   - "ls %WP_INSTDIR%"
 
   - ps: Add-AppveyorMessage "Installing NSISBI..."
-  - "mkdir NSIS_DIR"
-  - ps: Start-FileDownload ('https://sourceforge.net/projects/nsisbi/files/nsisbi3.04.2/nsis-binary-7069-2.zip') ../nsisbi.zip
-  - ps: if ((Get-FileHash '../nsisbi.zip').Hash -ne '12a5cb4a0476fc38ba296095b128898cafc6fd100a598f2f02e4fadc7de5cd50') { exit(1) }
-  - "7z x ../nsisbi.zip -o%NSIS_DIR% -aoa"
+  - ps: Start-FileDownload ('https://sourceforge.net/projects/nsisbi/files/nsisbi3.04.2/nsis-binary-7069-2.zip') nsisbi.zip
+  - ps: if ((Get-FileHash 'nsisbi.zip').Hash -ne '12a5cb4a0476fc38ba296095b128898cafc6fd100a598f2f02e4fadc7de5cd50') { exit(1) }
+  - "7z x nsisbi.zip -o%USERPROFILE%"
 
   - "ls '%NSIS_DIR%'"
 
   # Install UAC plugin
   - ps: Add-AppveyorMessage "Installing UAC plugin..."
-  - ps: Start-FileDownload ('http://nsis.sourceforge.net/mediawiki/images/8/8f/UAC.zip') ../UAC.zip
-  - ps: if ((Get-FileHash '../UAC.zip').Hash -ne '20E3192AF5598568887C16D88DE59A52C2CE4A26E42C5FB8BEE8105DCBBD1760') { exit(1) }
-  - "7z x ../UAC.zip -o%NSIS_DIR% -aoa"
+  - ps: Start-FileDownload ('http://nsis.sourceforge.net/mediawiki/images/8/8f/UAC.zip') UAC.zip
+  - ps: if ((Get-FileHash 'UAC.zip').Hash -ne '20E3192AF5598568887C16D88DE59A52C2CE4A26E42C5FB8BEE8105DCBBD1760') { exit(1) }
+  - "7z x UAC.zip -o%NSIS_DIR% -aoa"
 
   - "ls '%NSIS_DIR%'"
 
