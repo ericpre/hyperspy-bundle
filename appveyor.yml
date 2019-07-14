@@ -4,7 +4,8 @@ shallow_clone: true
 environment:
 
   global:
-    NSIS_DIR: "%USERPROFILE%\\nsis-binary-7069-2"
+    # NSIS_DIR: "%USERPROFILE%\\nsis-binary-7069-2"
+    NSIS_DIR: "%PROGRAMFILES(x86)%/NSIS"
     MPLBACKEND: "agg"
     WP_INSTDIR: "%USERPROFILE%\\wpdir\\WinPython-%PYTHON_ARCH%\\"
     WP_EXE: "%USERPROFILE%\\wpdir\\WinPython3-%PYTHON_ARCH%bit.exe"
