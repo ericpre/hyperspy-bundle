@@ -134,6 +134,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           path: ${{ env.asset_name }}
+          name: ${{ env.asset_name }}
 
       - shell: bash -l {0}
         name: Info new distribution
