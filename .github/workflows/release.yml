@@ -158,7 +158,6 @@ jobs:
           Start-Process -Wait -FilePath ${{ env.asset_name }} -ArgumentList "/S /AddToPath=0 /RegisterPython=0 /NoScripts=1 /D=${{ env.install_dir }}"
 
       - name: Upload artifact
-        if: startsWith(github.ref, 'refs/tags/') != true
         uses: actions/upload-artifact@v2
         with:
           path: ${{ env.asset_name }}
