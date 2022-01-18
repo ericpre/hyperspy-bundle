@@ -17,7 +17,7 @@ specs:
   - ase
   - atomap
   - conda
-  - dask >=2021.08.1
+  - dask >=2021.09.0
   - dask-labextension
   - hdf5plugin
   - hyperspy >=1.6.5
