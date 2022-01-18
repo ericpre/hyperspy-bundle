@@ -89,7 +89,8 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          python-version: 3.7
+          python-version: 3.9
+          miniforge-version: latest
 
       - shell: bash -l {0}
         name: Conda info
@@ -101,10 +102,6 @@ jobs:
         name: Install constructor
         run: |
           conda install constructor jinja2
-          # include fixes for start menu shortcut
-          # https://github.com/conda-forge/conda-standalone-feedstock/pull/18
-          conda install -y conda-standalone -c ericpre --override-channels
-          pip install https://github.com/ericpre/constructor/archive/refs/heads/workhorse.zip --force --no-deps
 
       - shell: bash -l {0}
         name: Build distribution
