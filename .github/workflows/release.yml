@@ -279,9 +279,6 @@ jobs:
           # pin dask until https://github.com/dask/dask/issues/7583 is fixed
           # and the dask version (2021.9.0) in winpython includes the bug fix 
           pip install dask>=2021.9.0 distributed>=2021.9.0
-          # pyfai 0.20 is built against numpy 1.21.1
-          # https://github.com/silx-kit/pyFAI/issues/1537
-          pip install pyfai==0.20 numpy==1.21.0 --no-binary pyfai --no-build-isolation
           pip install ${{ env.LIB_TO_INSTALL }}
 
       - shell: bash -l {0}
