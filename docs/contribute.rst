@@ -36,4 +36,4 @@ The documentation is built and deployed using github continuous integration with
 
 #. Build the sphinx docs
 #. The html output is committed and push the ``gh-branch`` branch
-#. The html output is deploy to https://ericpre.github.io/hyperspy-bundle
+#. The html output is deploy to https://hyperspy.org/hyperspy-bundle
