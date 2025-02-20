@@ -82,36 +82,42 @@ jobs:
             BLAS_IMPL: mkl
             ARCH: x86_64
             TARGET_PLATFORM: linux-64
+            BASEPATH: "file:///home/runner/work/hyperspy-bundle/hyperspy-bundle/"
           - os: ubuntu
             os_version: latest
             INSTALLER_EXTENSION: sh
             BLAS_IMPL: openblas
             ARCH: x86_64
             TARGET_PLATFORM: linux-64
+            BASEPATH: "file:///home/runner/work/hyperspy-bundle/hyperspy-bundle/"
           - os: windows
             os_version: latest
             INSTALLER_EXTENSION: exe
             BLAS_IMPL: mkl
             ARCH: x86_64
             TARGET_PLATFORM: win-64
+            BASEPATH: "file:///D:/a/hyperspy-bundle/hyperspy-bundle/"
           - os: windows
             os_version: latest
             INSTALLER_EXTENSION: exe
             BLAS_IMPL: openblas
             ARCH: x86_64
             TARGET_PLATFORM: win-64
+            BASEPATH: "file:///D:/a/hyperspy-bundle/hyperspy-bundle/"
           - os: macos
             os_version: '13'
             INSTALLER_EXTENSION: pkg
             BLAS_IMPL: mkl
             ARCH: x86_64
             TARGET_PLATFORM: osx-64
+            BASEPATH: ""
           - os: macos
             os_version: latest
             INSTALLER_EXTENSION: pkg
             BLAS_IMPL: accelerate
             ARCH: arm64
             TARGET_PLATFORM: osx-arm64
+            BASEPATH: ""
     env:
       DISPLAY: ':0'
 
@@ -126,13 +132,17 @@ jobs:
           miniforge-version: latest
           channels: conda-forge
           channel-priority: strict
+          auto-activate-base: false
+          activate-environment: "build"
 
       - name: Install constructor
         run: |
+          conda activate build
           conda install constructor
 
       - name: Conda info
         run: |
+          conda activate build
           conda info
           conda list
 
@@ -142,6 +152,7 @@ jobs:
           BLAS_IMPL: ${{ matrix.BLAS_IMPL }}
           CONDA_SOLVER: 'libmamba'
         run: |
+          conda activate build
           constructor -v conda_distribution
 
       - name: Set asset name
@@ -163,7 +174,7 @@ jobs:
           echo "asset_name=$new_installer_name" >> $GITHUB_ENV
           echo "Installer name: "$new_installer_name
           echo "#################################"
-          installer_path="file://"$(readlink -f $new_installer_name)
+          installer_path=${{ matrix.BASEPATH }}$new_installer_name
           echo "installer_path=$installer_path" >> $GITHUB_ENV
           echo "Installer path: "$installer_path
           echo "#################################"
@@ -181,11 +192,18 @@ jobs:
           name: ${{ env.asset_name }}
 
       - uses: conda-incubator/setup-miniconda@v3
+        if: runner.os != 'macos'
         with:
           channels: conda-forge
           installer-url: ${{ env.installer_path }}
           auto-activate-base: true
           activate-environment: ""
+
+      - name: Install new distribution (MacOS)
+        if: runner.os == 'macos'
+        run: |
+          echo "install_dir=/Users/runner/hyperspy-bundle" >> $GITHUB_ENV
+          installer -pkg ${{ env.asset_name }} -target CurrentUserHomeDirectory
 
       - name: Info new distribution
         run: |
