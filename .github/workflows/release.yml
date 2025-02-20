@@ -163,7 +163,7 @@ jobs:
           echo "asset_name=$new_installer_name" >> $GITHUB_ENV
           echo "Installer name: "$new_installer_name
           echo "#################################"
-          installer_path=$(readlink -f $new_installer_name)
+          installer_path="file://"$(readlink -f $new_installer_name)
           echo "installer_path=$installer_path" >> $GITHUB_ENV
           echo "Installer path: "$installer_path
           echo "#################################"
