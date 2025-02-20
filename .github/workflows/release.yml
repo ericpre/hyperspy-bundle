@@ -162,38 +162,16 @@ jobs:
           mv $installer_name $new_installer_name
           echo "asset_name=$new_installer_name" >> $GITHUB_ENV
           echo "Installer name: "$new_installer_name
+          echo "#################################"
+          installer_path=$(readlink -f $new_installer_name)
+          echo "installer_path=$installer_path" >> $GITHUB_ENV
+          echo "Installer path: "$installer_path
+          echo "#################################"
           ls
 
       - name: Get hash
         run: |
           shasum -a 256 ${{ env.asset_name }}
-
-      - name: Install new distribution (Linux)
-        if: runner.os == 'linux'
-        env:
-          install_dir: '${{ github.workspace }}/new_distribution'
-        run: |
-          echo "install_dir=${{ env.install_dir }}" >> $GITHUB_ENV
-          bash ${{ env.asset_name }} -b -p ${{ env.install_dir }}
-
-      - name: Install new distribution (MacOS)
-        if: runner.os == 'macos'
-        run: |
-          echo "install_dir=/Users/runner/hyperspy-bundle" >> $GITHUB_ENV
-          installer -pkg ${{ env.asset_name }} -target CurrentUserHomeDirectory
-
-      - name: Install new distribution (Windows)
-        if: runner.os == 'windows'
-        env:
-          install_dir: '${{ github.workspace }}\nd'
-        run: |
-          echo "install_dir=${{ env.install_dir }}" >> $GITHUB_ENV
-
-      - name: Install new distribution (Windows)
-        if: runner.os == 'windows'
-        shell: powershell
-        run: |
-          Start-Process -Wait -FilePath ${{ env.asset_name }} -ArgumentList "/S /AddToPath=0 /RegisterPython=0 /NoScripts=1 /D=${{ env.install_dir }}"
 
       - name: Upload artifact
         if: startsWith(github.ref, 'refs/tags/') != true
@@ -202,13 +180,15 @@ jobs:
           path: ${{ env.asset_name }}
           name: ${{ env.asset_name }}
 
-      - name: Show install folder content
-        run : |
-          ls "${{ env.install_dir }}"
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          channels: conda-forge
+          installer-url: ${{ env.installer_path }}
+          auto-activate-base: true
+          activate-environment: ""
 
       - name: Info new distribution
         run: |
-          conda activate "${{ env.install_dir }}"
           conda info
           conda config --show channels
           conda config --show channel_priority
@@ -216,7 +196,6 @@ jobs:
 
       - name: Check latest available hyperspy version
         run: |
-          conda activate "${{ env.install_dir }}"     
           python check_hyperspy_latest.py
 
       - name: Install xvfb
@@ -232,70 +211,59 @@ jobs:
       - name: Install test dependencies
         if: always()
         run: |
-          conda activate "${{ env.install_dir }}"
           mamba install ${{ env.TEST_DEPS }}
 
       - if: always()
         name: Test new distribution (HyperSpyUI)
         run: |
-          conda activate "${{ env.install_dir }}"
           # Error on closing figure, not critical
           pytest --pyargs hyperspyui -k "not plotting"
 
       - name: Test RosettaSciIO
         if: always()
         run: |
-          conda activate "${{ env.install_dir }}"
           pytest --pyargs rsciio --reruns 3 -n 1 -k "not TestOperate"
 
       - name: Test hyperspy
         if: always()
         run: |
-          conda activate "${{ env.install_dir }}"
           pytest --pyargs hyperspy --reruns 3 -n 2
 
       - name: Test hyperspy_gui_ipywidgets
         if: always()
         run: |
-          conda activate "${{ env.install_dir }}"
           pytest --pyargs hyperspy_gui_ipywidgets
 
       - name: Test hyperspy_gui_traitsui
         if: runner.os != 'linux' && always()
         run: |
-          conda activate "${{ env.install_dir }}"
           # test_image_contrast_tool not supported with agg backend
           pytest --pyargs hyperspy_gui_traitsui -k "not test_image_contrast_tool"
 
       - name: Run test exspy
         if: always()
         run: |
-          conda activate "${{ env.install_dir }}"
           pytest --pyargs exspy
   
       - name: Run test holospy
         if: always()
         run: |
-          conda activate "${{ env.install_dir }}"
           pytest --pyargs holospy
 
       - name: Run test lumispy
         if: always()
         run: |
-          conda activate "${{ env.install_dir }}"
           pytest --pyargs lumispy
 
       - name: Run test pyxem
         if: always()
         run: |
-          conda activate "${{ env.install_dir }}"
           # cause of the TestAddEllipseArrayAsMarkers failure is unknown (seems to be on blas mkl only)
           pytest --pyargs pyxem -k "not TestAddEllipseArrayAsMarkers"
 
       - name: Run test atomap
         if: always()
         run: |
-          conda activate "${{ env.install_dir }}"
           # Skip interactive test
           pytest --pyargs atomap -k "not TestSelectAtomsWithGui"
 
