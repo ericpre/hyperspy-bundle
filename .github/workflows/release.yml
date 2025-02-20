@@ -191,6 +191,11 @@ jobs:
           path: ${{ env.asset_name }}
           name: ${{ env.asset_name }}
 
+      - name: Set installation directory (windows)
+        if: runner.os == 'windows'
+        run: |
+          echo "CONDA=${{ github.workspace }}\nd" >> $GITHUB_ENV   
+
       - uses: conda-incubator/setup-miniconda@v3
         if: runner.os != 'macos'
         with:
