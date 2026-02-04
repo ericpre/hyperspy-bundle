@@ -25,7 +25,7 @@ specs:
   - abtem
   - ase
   - atomap >=0.4.2
-  - conda >=25.11.1
+  - conda >=26.1.0
   - dask-core >=2023.6.0
   - dask-labextension
   - dask-image
@@ -61,7 +61,7 @@ specs:
   #- pymatgen
   - pyebsdindex-base >=0.3.9.1
   - pystackreg
-  - python 3.12*
+  - python 3.13*
   - python-graphviz
   - python-rapidjson
   - pyxem >=0.21
