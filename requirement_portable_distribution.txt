@@ -9,7 +9,7 @@ holospy
 hdf5plugin
 hyperspy[all]
 hyperspyui
-kikuchipy[all]
+kikuchipy[all] >=0.12.1
 lumispy
 matplotlib-scalebar
 nglview

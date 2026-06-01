@@ -408,11 +408,9 @@ jobs:
         if: always()
         run: |
           conda activate "${{ env.install_dir }}"
-          # test_dataset_availability: https://github.com/pyxem/kikuchipy/issues/799
-          # https://github.com/hyperspy/hyperspy-extensions-list/issues/96#issuecomment-4555594312
           # test_not_allow_download_raises: https://github.com/pyxem/kikuchipy/issues/707
           # test_ebsd_refinement: occasional segmentation fault
-          pytest --pyargs kikuchipy -k "not test_ebsd_refinement and not test_not_allow_download_raises and not test_dataset_availability and not test_estimate_xtilt"
+          pytest --pyargs kikuchipy -k "not test_ebsd_refinement and not test_not_allow_download_raises"
 
       - name: Run test etspy
         if: always()
@@ -635,16 +633,15 @@ jobs:
           # Skip interactive test
           pytest --pyargs atomap -k "not TestSelectAtomsWithGui"
 
-      # - name: Run test kikuchipy
-      #   if: always()
-      #   run: |
-      #     call "${{ env.WP_DIR_NAME }}\scripts\env.bat"
-      #     # test_dataset_availability: https://github.com/pyxem/kikuchipy/issues/799
-      #     # https://github.com/hyperspy/hyperspy-extensions-list/issues/96#issuecomment-4555594312
-      #     # test_not_allow_download_raises: https://github.com/pyxem/kikuchipy/issues/707
-      #     pytest --pyargs kikuchipy -k "not test_not_allow_download_raises and not test_dataset_availability and not test_estimate_xtilt"
+      - name: Run test kikuchipy
+        if: always()
+        run: |
+          call "${{ env.WP_DIR_NAME }}\scripts\env.bat"
+          # test_not_allow_download_raises: https://github.com/pyxem/kikuchipy/issues/707
+          # test_plot_spherical: segementation fault
+          pytest --pyargs kikuchipy -k "not test_not_allow_download_raises and not test_plot_spherical"
 
-      # astra-toolbox wheel not available for windows on pypi
+      # # astra-toolbox wheel not available for windows on pypi
       # - name: Run test etspy
       #   if: always()
       #   run: |
