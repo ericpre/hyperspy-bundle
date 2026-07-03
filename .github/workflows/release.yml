@@ -356,7 +356,8 @@ jobs:
           conda activate "${{ env.install_dir }}"
           # test_rank_lstsq_residual fails on windows with MKL
           # test_units_error and test_offset_as_quantity_setter_string_no_units fixed in https://github.com/hyperspy/hyperspy/pull/3602 (not released yet)
-          pytest --pyargs hyperspy --reruns 3 -n 2 -k "not test_arpack and not test_units_error and not test_lazy_units_error and not test_offset_as_quantity_setter_string_no_units"
+          # test_lazy_compare_lstsq: fails on macos accelerate https://github.com/hyperspy/hyperspy/pull/3677
+          pytest --pyargs hyperspy --reruns 3 -n 2 -k "not test_arpack and not test_units_error and not test_lazy_units_error and not test_offset_as_quantity_setter_string_no_units and not test_lazy_compare_lstsq"
 
       - name: Test hyperspy_gui_ipywidgets
         if: always()
